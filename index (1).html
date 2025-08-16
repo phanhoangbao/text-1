@@ -1,0 +1,399 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Sinh Nhật Pé Thắm</title>
+    <style>
+        body {
+            background-color: #ffe6f0; /* Màu nền hồng phấn */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .message-container {
+            text-align: center;
+            position: relative;
+            z-index: 1; /* Chữ trên trái tim */
+        }
+        .message {
+            opacity: 0; /* Ẩn ban đầu */
+            font-size: 28px;
+            color: #ff1493; /* Màu hồng đậm */
+            margin: 15px 0;
+            transform: translateX(-100%); /* Bắt đầu từ bên trái */
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        .message.show {
+            opacity: 1;
+            transform: translateX(0); /* Slide vào vị trí */
+        }
+        .message.hide {
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        /* Hiệu ứng trái tim rơi - Kiểu 1: Rơi thẳng */
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff69b4;
+            transform: rotate(-45deg);
+            animation: fall 3s linear infinite;
+            z-index: 0;
+        }
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff69b4;
+            border-radius: 50%;
+        }
+        .heart::before {
+            top: -10px;
+            left: 0;
+        }
+        .heart::after {
+            left: 10px;
+            top: 0;
+        }
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(-45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+
+        /* Hiệu ứng trái tim rơi - Kiểu 2: Rơi zigzag */
+        .heart-zigzag {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff69b4;
+            transform: rotate(-45deg);
+            animation: fallZigzag 3.5s linear infinite;
+            z-index: 0;
+        }
+        .heart-zigzag::before,
+        .heart-zigzag::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff69b4;
+            border-radius: 50%;
+        }
+        .heart-zigzag::before {
+            top: -10px;
+            left: 0;
+        }
+        .heart-zigzag::after {
+            left: 10px;
+            top: 0;
+        }
+        @keyframes fallZigzag {
+            0% {
+                transform: translateY(-100vh) translateX(0) rotate(-45deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(0) translateX(50px) rotate(-45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(-50px) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+
+        /* Phân bố 40 trái tim */
+        .heart:nth-child(2) { left: 5%; animation-delay: 0.1s; }
+        .heart:nth-child(3) { left: 10%; animation-delay: 0.2s; }
+        .heart:nth-child(4) { left: 15%; animation-delay: 0.3s; }
+        .heart:nth-child(5) { left: 20%; animation-delay: 0.4s; }
+        .heart:nth-child(6) { left: 25%; animation-delay: 0.5s; }
+        .heart:nth-child(7) { left: 30%; animation-delay: 0.6s; }
+        .heart:nth-child(8) { left: 35%; animation-delay: 0.7s; }
+        .heart:nth-child(9) { left: 40%; animation-delay: 0.8s; }
+        .heart:nth-child(10) { left: 45%; animation-delay: 0.9s; }
+        .heart:nth-child(11) { left: 50%; animation-delay: 1s; }
+        .heart-zigzag:nth-child(12) { left: 5%; animation-delay: 0.2s; }
+        .heart-zigzag:nth-child(13) { left: 10%; animation-delay: 0.3s; }
+        .heart-zigzag:nth-child(14) { left: 15%; animation-delay: 0.4s; }
+        .heart-zigzag:nth-child(15) { left: 20%; animation-delay: 0.5s; }
+        .heart-zigzag:nth-child(16) { left: 25%; animation-delay: 0.6s; }
+        .heart-zigzag:nth-child(17) { left: 30%; animation-delay: 0.7s; }
+        .heart-zigzag:nth-child(18) { left: 35%; animation-delay: 0.8s; }
+        .heart-zigzag:nth-child(19) { left: 40%; animation-delay: 0.9s; }
+        .heart-zigzag:nth-child(20) { left: 45%; animation-delay: 1s; }
+        .heart-zigzag:nth-child(21) { left: 50%; animation-delay: 1.1s; }
+        .heart:nth-child(22) { left: 55%; animation-delay: 0.1s; }
+        .heart:nth-child(23) { left: 60%; animation-delay: 0.2s; }
+        .heart:nth-child(24) { left: 65%; animation-delay: 0.3s; }
+        .heart:nth-child(25) { left: 70%; animation-delay: 0.4s; }
+        .heart:nth-child(26) { left: 75%; animation-delay: 0.5s; }
+        .heart:nth-child(27) { left: 80%; animation-delay: 0.6s; }
+        .heart:nth-child(28) { left: 85%; animation-delay: 0.7s; }
+        .heart:nth-child(29) { left: 90%; animation-delay: 0.8s; }
+        .heart:nth-child(30) { left: 95%; animation-delay: 0.9s; }
+        .heart:nth-child(31) { left: 100%; animation-delay: 1s; }
+        .heart-zigzag:nth-child(32) { left: 55%; animation-delay: 0.2s; }
+        .heart-zigzag:nth-child(33) { left: 60%; animation-delay: 0.3s; }
+        .heart-zigzag:nth-child(34) { left: 65%; animation-delay: 0.4s; }
+        .heart-zigzag:nth-child(35) { left: 70%; animation-delay: 0.5s; }
+        .heart-zigzag:nth-child(36) { left: 75%; animation-delay: 0.6s; }
+        .heart-zigzag:nth-child(37) { left: 80%; animation-delay: 0.7s; }
+        .heart-zigzag:nth-child(38) { left: 85%; animation-delay: 0.8s; }
+        .heart-zigzag:nth-child(39) { left: 90%; animation-delay: 0.9s; }
+        .heart-zigzag:nth-child(40) { left: 95%; animation-delay: 1s; }
+        .heart-zigzag:nth-child(41) { left: 100%; animation-delay: 1.1s; }
+
+        /* Hộp quà cải tiến */
+        .gift-box {
+            position: absolute;
+            width: 340px;
+            height: 340px;
+            background-color: #fffacd; /* Vàng nhạt */
+            border: 5px solid #ff1493; /* Viền hồng đậm */
+            top: 50%;
+            left: 50%;
+            margin-left: -170px;
+            margin-top: -170px;
+            z-index: 4; /* Trên tất cả */
+            animation: openGift 2s ease-in-out forwards;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5); /* Bóng hồng */
+        }
+        .gift-box::before {
+            content: '';
+            position: absolute;
+            width: 340px;
+            height: 100px; /* Nắp hộp */
+            background-color: #fffacd;
+            border: 5px solid #ff1493;
+            top: -105px;
+            animation: liftLid 2s ease-in-out forwards;
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+        }
+        .gift-box::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 340px;
+            background-color: #ff4040; /* Ruy băng dọc */
+            left: 145px;
+            z-index: 5;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+        .gift-box .ribbon-horizontal {
+            position: absolute;
+            width: 340px;
+            height: 50px;
+            background-color: #ff4040; /* Ruy băng ngang */
+            top: 145px;
+            z-index: 5;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+        /* Hiệu ứng lấp lánh */
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            animation: sparkle 1.5s ease-in-out infinite;
+            z-index: 5;
+        }
+        .sparkle:nth-child(1) { top: 20px; left: 20px; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 20px; right: 20px; animation-delay: 0.3s; }
+        .sparkle:nth-child(3) { bottom: 20px; left: 20px; animation-delay: 0.6s; }
+        .sparkle:nth-child(4) { bottom: 20px; right: 20px; animation-delay: 0.9s; }
+        @keyframes sparkle {
+            0%, 100% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes openGift {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+        @keyframes liftLid {
+            0% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-50px) rotate(5deg); }
+            100% { transform: translateY(-50px) rotate(5deg); opacity: 0; }
+        }
+
+        /* Trái tim lớn */
+        .big-heart {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background-color: #ff1493;
+            transform: rotate(-45deg) scale(0);
+            animation: bigHeart 2.5s ease-in-out forwards 2s;
+            z-index: 3;
+            top: 50%;
+            left: 50%;
+            margin-left: -200px;
+            margin-top: -200px;
+        }
+        .big-heart::before,
+        .big-heart::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background-color: #ff1493;
+            border-radius: 50%;
+        }
+        .big-heart::before {
+            top: -200px;
+            left: 0;
+        }
+        .big-heart::after {
+            left: 200px;
+            top: 0;
+        }
+        @keyframes bigHeart {
+            0% { transform: rotate(-45deg) scale(0); opacity: 0; }
+            50% { transform: rotate(-45deg) scale(1.1); opacity: 1; }
+            100% { transform: rotate(-45deg) scale(1); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="gift-box">
+        <div class="ribbon-horizontal"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+    </div> <!-- Hộp quà -->
+    <div class="big-heart"></div> <!-- Trái tim lớn -->
+    <div class="message-container">
+        <div class="message">Happy Birthday My Princess</div>
+        <div class="message">Chúc pé Thắm của ảnh luôn vui vẻ nháaaaa</div>
+        <div class="message">Yêu ẻm nhất trên đời!</div>
+    </div>
+
+    <!-- 40 trái tim rơi -->
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+    <div class="heart-zigzag"></div>
+
+    <script>
+        const messages = document.querySelectorAll('.message');
+        let delay = 4500; // Chờ 4.5s (2s hộp quà + 2.5s trái tim lớn)
+
+        // Hiển thị lần lượt, ẩn đi
+        messages.forEach((msg, index) => {
+            // Hiện dòng
+            setTimeout(() => {
+                msg.classList.add('show');
+            }, delay);
+            // Ẩn dòng sau 2s hiển thị
+            setTimeout(() => {
+                msg.classList.add('hide');
+            }, delay + 1300);
+            delay += 2700; // 1.5s hiện + 2s hiển thị
+        });
+
+        // Sau khi dòng 3 ẩn, hiện lại cả 3 dòng lần lượt và giữ nguyên
+        setTimeout(() => {
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    msg.classList.remove('hide');
+                    msg.classList.add('show');
+                }, 3600 + 2800 * 2.8 + index * 1000); // Bắt đầu sau khi dòng 3 ẩn
+            });
+        }, delay);
+    </script>
+</body>
+</html>
